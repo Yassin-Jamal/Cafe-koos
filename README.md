@@ -73,23 +73,34 @@ api/sollicitatie.js  sollicitatieformulier
 api/_mail.js         gedeelde validatie, opmaak en verzending via Resend
 ```
 
-De mail komt binnen met de afzender van je eigen domein en met **Reply-To op de invuller**, dus je
-kunt in je mailprogramma direct op het bericht antwoorden.
+Zo gaat een bericht de deur uit:
+
+| | |
+|---|---|
+| **From** | `Café Koos <noreply@mail.permaflare.com>` |
+| **To** | `bakkerlianne@live.nl` |
+| **Reply-To** | het adres dat de bezoeker invulde |
+
+Door die Reply-To kun je in je mailprogramma gewoon op "Beantwoorden" drukken — je antwoord gaat
+dan naar de bezoeker, niet naar het noreply-adres.
 
 ### Instellen (eenmalig)
 
 1. Maak een gratis account op [resend.com](https://resend.com) — 3.000 mails per maand
-2. Voeg `cafekoos.com` toe als domein. Resend geeft je DNS-records; zet die bij Namecheap onder
-   Advanced DNS. Staat er al een `resend._domainkey` van de oude Base44-koppeling, vervang die dan
-   door de nieuwe.
+2. Voeg **`mail.permaflare.com`** toe als domein in Resend en zet de DNS-records die Resend geeft
+   bij dat domein neer. Let op: het verzenddomein is permaflare.com, dus op cafekoos.com hoef je
+   voor de mail niets te wijzigen.
 3. Maak een API-key aan
 4. Zet in Vercel onder **Settings → Environment Variables**:
 
 | Variabele | Waarde | Verplicht |
 |---|---|---|
 | `RESEND_API_KEY` | je sleutel van Resend | ja |
-| `MAIL_TO` | waar de berichten heen gaan | nee (standaard `bakkerlianne@live.nl`) |
-| `MAIL_FROM` | afzender, moet op het geverifieerde domein | nee (standaard `website@cafekoos.com`) |
+| `MAIL_TO` | andere ontvanger | nee (standaard `bakkerlianne@live.nl`) |
+| `MAIL_FROM` | andere afzender | nee (standaard `Café Koos <noreply@mail.permaflare.com>`) |
+
+Afzender en ontvanger staan al goed in de code, dus alleen `RESEND_API_KEY` is nodig. De andere
+twee zijn er voor als je later wilt wisselen zonder de code aan te passen.
 
 Na het toevoegen van de variabelen moet je één keer opnieuw deployen, anders kent de functie ze nog niet.
 

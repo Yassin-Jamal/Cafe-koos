@@ -2,9 +2,15 @@
 // Bestanden die met _ beginnen worden door Vercel niet als endpoint aangeboden.
 //
 // Benodigde environment variables in Vercel:
-//   RESEND_API_KEY   je API-sleutel van resend.com          (verplicht)
-//   MAIL_TO          waar de berichten heen gaan            (standaard: bakkerlianne@live.nl)
-//   MAIL_FROM        afzender op een geverifieerd domein    (standaard: website@cafekoos.com)
+//   RESEND_API_KEY   je API-sleutel van resend.com   (verplicht)
+//   MAIL_TO          waar de berichten heen gaan     (standaard: zie hieronder)
+//   MAIL_FROM        afzender                        (standaard: zie hieronder)
+//
+// De afzender moet op een domein staan dat in Resend geverifieerd is —
+// dat is hier mail.permaflare.com, niet cafekoos.com.
+
+const MAIL_FROM = 'Café Koos <noreply@mail.permaflare.com>';
+const MAIL_TO = 'bakkerlianne@live.nl';
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 
@@ -96,9 +102,10 @@ async function sendViaResend({ subject, html, text, replyTo }) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      from: process.env.MAIL_FROM || 'Café Koos <website@cafekoos.com>',
-      to: [process.env.MAIL_TO || 'bakkerlianne@live.nl'],
-      reply_to: replyTo,
+      from: process.env.MAIL_FROM || MAIL_FROM,
+      to: [process.env.MAIL_TO || MAIL_TO],
+      reply_to: replyTo, // het adres dat de bezoeker invulde
+
       subject,
       html,
       text
