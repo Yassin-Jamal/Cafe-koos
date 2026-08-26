@@ -87,16 +87,65 @@ function initFormTypes() {
   });
 }
 
+/* Formulieren versturen naar de API-functies in api/. */
 function initForms() {
   document.querySelectorAll('form[data-form]').forEach(form => {
-    form.addEventListener('submit', e => {
+    const endpoint = form.dataset.form;
+    if (!endpoint) return;
+
+    const ok = form.querySelector('[data-form-ok]');
+    const error = form.querySelector('[data-form-error]');
+    const button = form.querySelector('button[type="submit"]');
+    const buttonLabel = button ? button.innerHTML : '';
+
+    const show = (el, message) => {
+      if (!el) return;
+      if (message) el.textContent = message;
+      el.classList.remove('hidden');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    const hide = el => el && el.classList.add('hidden');
+
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      const ok = form.querySelector('[data-form-ok]');
-      if (ok) {
-        ok.classList.remove('hidden');
-        ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      hide(ok);
+      hide(error);
+
+      if (!form.reportValidity()) return;
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Versturen…';
       }
-      form.reset();
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form).entries()))
+        });
+
+        let result = {};
+        try { result = await response.json(); } catch { /* geen json terug */ }
+
+        if (response.ok && result.ok) {
+          form.reset();
+          // de onderwerpregel hoort weer op het gekozen type te staan
+          const active = form.parentElement?.querySelector('[data-form-type].bg-primary');
+          const subject = form.querySelector('#onderwerp');
+          if (active && subject) subject.value = active.dataset.formType;
+          show(ok);
+        } else {
+          show(error, result.error || 'Versturen lukte niet. Probeer het later nog eens, of mail ons direct op bakkerlianne@live.nl.');
+        }
+      } catch {
+        show(error, 'Geen verbinding. Controleer je internet en probeer het opnieuw.');
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = buttonLabel;
+        }
+      }
     });
   });
 }

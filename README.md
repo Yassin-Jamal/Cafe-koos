@@ -63,11 +63,49 @@ juiste dag op de contactpagina. Pas ze allebei aan.
 
 **Evenementen** — `parts/evenementen.html` toont nu de lege staat, net als de originele site.
 
-## Let op
+## De mailfunctie
 
-De formulieren op Contact en Vacatures tonen een bedankbericht maar versturen nog niets — dat kan
-een statische site niet. Koppel ze aan een formulierdienst (Formspree, Netlify Forms) of aan je
-eigen backend om ze werkend te maken. Op de originele site gaan ze naar de Base44-backend.
+De formulieren op Contact en Vacatures versturen echt, via twee serverless functies op Vercel:
+
+```
+api/contact.js       contactformulier (Contact / Feestje boeken / Exposeren)
+api/sollicitatie.js  sollicitatieformulier
+api/_mail.js         gedeelde validatie, opmaak en verzending via Resend
+```
+
+De mail komt binnen met de afzender van je eigen domein en met **Reply-To op de invuller**, dus je
+kunt in je mailprogramma direct op het bericht antwoorden.
+
+### Instellen (eenmalig)
+
+1. Maak een gratis account op [resend.com](https://resend.com) — 3.000 mails per maand
+2. Voeg `cafekoos.com` toe als domein. Resend geeft je DNS-records; zet die bij Namecheap onder
+   Advanced DNS. Staat er al een `resend._domainkey` van de oude Base44-koppeling, vervang die dan
+   door de nieuwe.
+3. Maak een API-key aan
+4. Zet in Vercel onder **Settings → Environment Variables**:
+
+| Variabele | Waarde | Verplicht |
+|---|---|---|
+| `RESEND_API_KEY` | je sleutel van Resend | ja |
+| `MAIL_TO` | waar de berichten heen gaan | nee (standaard `bakkerlianne@live.nl`) |
+| `MAIL_FROM` | afzender, moet op het geverifieerde domein | nee (standaard `website@cafekoos.com`) |
+
+Na het toevoegen van de variabelen moet je één keer opnieuw deployen, anders kent de functie ze nog niet.
+
+### Lokaal testen
+
+`serve.ps1` beantwoordt POST-verzoeken naar `/api/...` met een nep-succes, zodat je de formulieren
+kunt uitproberen zonder Node en zonder dat er mail verstuurd wordt. Wil je de echte functies
+draaien, gebruik dan `vercel dev`.
+
+### Spam
+
+Beide formulieren hebben een verborgen veld (`website`). Vullen bots dat in, dan doet de server
+alsof het gelukt is en verstuurt niets. Loop je later toch tegen spam aan, dan is een captcha
+(bijvoorbeeld Cloudflare Turnstile) de volgende stap.
+
+## Let op
 
 `css/site.css` is de gecompileerde stylesheet van de originele site (Tailwind). Losse klassen
 aanpassen werkt daarom niet zoals in een normaal CSS-bestand; de kleuren staan wel bovenaan als

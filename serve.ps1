@@ -55,6 +55,19 @@ while ($listener.IsListening) {
     continue
   }
 
+  # De API-functies draaien alleen op Vercel (Node). Lokaal doen we alsof,
+  # zodat je de formulieren wel kunt uitproberen. Er wordt niets verstuurd.
+  if ($path -like 'api/*' -and $req.HttpMethod -eq 'POST') {
+    $reader = New-Object System.IO.StreamReader($req.InputStream, [System.Text.Encoding]::UTF8)
+    $body = $reader.ReadToEnd(); $reader.Close()
+    Write-Host ("[mock] {0} <- {1}" -f $path, $body)
+    $ctx.Response.ContentType = 'application/json; charset=utf-8'
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes('{"ok":true,"mock":true}')
+    $ctx.Response.OutputStream.Write($bytes, 0, $bytes.Length)
+    $ctx.Response.OutputStream.Close()
+    continue
+  }
+
   if ($path -eq '') { $path = 'index.html' }
   $file = Join-Path $root $path
 
