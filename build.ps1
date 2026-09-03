@@ -57,6 +57,7 @@ $footer
 </div>
 <script src="js/icons.js"></script>
 <script src="js/reviews.js"></script>
+<script src="js/events.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

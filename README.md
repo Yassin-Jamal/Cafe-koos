@@ -61,7 +61,26 @@ wordt daaruit gegenereerd, dus die niet met de hand bewerken.
 `js/app.js`. Die array voedt de "Vandaag geopend"-regel in de hero en de footer, en markeert de
 juiste dag op de contactpagina. Pas ze allebei aan.
 
-**Evenementen** — `parts/evenementen.html` toont nu de lege staat, net als de originele site.
+**Evenementen** — de lijst `EVENTS` bovenin `js/events.js`. Eén optreden ziet er zo uit:
+
+```js
+{
+  datum: '2026-09-05',        // JJJJ-MM-DD
+  tijd: '18.00',              // zoals het op de poster staat
+  soort: 'Live',              // wordt het gouden labeltje
+  naam: 'THE ACETONES',
+  wat: '60ties garagerock/punk'   // mag leeg
+}
+```
+
+De volgorde in de lijst maakt niet uit, er wordt op datum gesorteerd. **Voorbije optredens
+verdwijnen vanzelf** — een optreden blijft de hele dag zelf nog staan en valt de dag erna weg. Is
+alles geweest, dan komt automatisch de tekst "Geen evenementen op dit moment" terug. Je hoeft dus
+niets op te ruimen en na een wijziging hoef je `build.ps1` niet te draaien: alleen dit bestand
+opslaan en pushen.
+
+De agendapagina toont alles, de homepage de eerstvolgende drie (dat aantal staat als
+`data-events="3"` in `parts/index.html`).
 
 ## De mailfunctie
 
