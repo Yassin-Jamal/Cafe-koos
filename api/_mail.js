@@ -7,9 +7,9 @@
 //   MAIL_FROM        afzender                        (standaard: zie hieronder)
 //
 // De afzender moet op een domein staan dat in Resend geverifieerd is —
-// dat is hier mail.permaflare.com, niet cafekoos.com.
+// dat is hier mail.permyron.com, niet cafekoos.com.
 
-const MAIL_FROM = 'Café Koos <noreply@mail.permaflare.com>';
+const MAIL_FROM = 'Café Koos <noreply@mail.permyron.com>';
 const MAIL_TO = 'bakkerlianne@live.nl';
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
