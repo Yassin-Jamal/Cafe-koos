@@ -116,6 +116,7 @@ async function sendViaResend({ subject, html, text, replyTo }) {
     const detail = await response.text().catch(() => '');
     const err = new Error(`Resend gaf ${response.status}: ${detail.slice(0, 300)}`);
     err.code = 'PROVIDER';
+    err.status = response.status;
     throw err;
   }
 
@@ -151,11 +152,15 @@ function handler(build) {
       if (err.code === 'VALIDATION') {
         return res.status(400).json({ ok: false, error: err.message });
       }
-      // Echte fout: loggen voor onszelf, maar niets technisch teruggeven.
+      // Echte fout: loggen voor onszelf. De bezoeker krijgt alleen de nette
+      // melding; `code` en `status` staan er puur in om storingen te kunnen
+      // naspeuren en bevatten geen gegevens van de invuller of sleutels.
       console.error('[formulier]', err.code || 'ONBEKEND', err.message);
       return res.status(502).json({
         ok: false,
-        error: 'Versturen lukte niet. Probeer het later nog eens, of mail ons direct op bakkerlianne@live.nl.'
+        error: 'Versturen lukte niet. Probeer het later nog eens, of mail ons direct op bakkerlianne@live.nl.',
+        code: err.code || 'ONBEKEND',
+        status: err.status || null
       });
     }
   };
