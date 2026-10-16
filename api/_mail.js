@@ -160,7 +160,8 @@ function handler(build) {
         ok: false,
         error: 'Versturen lukte niet. Probeer het later nog eens, of mail ons direct op bakkerlianne@live.nl.',
         code: err.code || 'ONBEKEND',
-        status: err.status || null
+        status: err.status || null,
+        detail: (err.message || '').slice(0, 200)
       });
     }
   };
